@@ -1,4 +1,4 @@
-insight-log-jboss
+abrt-log-jboss
 =================
 
 ABRT error handler for JBoss AS 7
