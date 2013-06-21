@@ -33,55 +33,67 @@
  */
 package org.abrt.log.jboss;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+import org.abrt.ProblemData;
+import org.abrt.ProblemDataAbrt;
+import org.abrt.ProblemDataServer;
 import org.jboss.logmanager.formatters.PatternFormatter;
 
 public class AbrtLogHandler extends Handler {
     private final Formatter formatter = new PatternFormatter("%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n");
+    private ProblemDataServer problemServer = null;
 
     public AbrtLogHandler() {
         setFormatter(formatter);
         System.out.println(">>>>>>>>>>>>>> Init ABRT logger");
         System.out.println(getLevel());
+
+        try {
+            problemServer = new ProblemDataServer();
+        }
+        catch (Exception e) {
+            System.out.println("Can;t connect to ABRT: "+ e.getMessage());
+        }
+        System.out.println("Connected to ABRT");
     }
 
     private void log(LogRecord record) {
 
-        BufferedWriter output = null;
         System.out.println(">>>>>>>>>>>>>> Let's log something for ABRT! " + String.format(record.getMessage(), record.getParameters()));
 
-
+        ProblemData pd = new ProblemDataAbrt();
         Throwable throwable = record.getThrown();
         if (throwable != null) {
-            //save the stacktrace to "backtrace" element
+            System.out.println("Got throwable, extracting stacktrace");
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter pWriter = new PrintWriter(stringWriter);
+            throwable.printStackTrace(pWriter);
+            pd.add("BACKTRACE", stringWriter.toString());
         }
+        pd.add("REASON", record.getMessage());
+        pd.add("TYPE", "jboss");
+        pd.add("ANALYZER", "jboss");
+        pd.add("PID", "" + Thread.currentThread().getId());
+        /* TODO: get a path to the war file of the crashing application */
+        pd.add("EXECUTABLE", "/usr/share/jboss-as/bin/standalone.sh");
+        System.out.println("ABRT LOG THREAD: " + Thread.currentThread().getId());
+        System.out.println("Sending data to ABRT");
 
         try {
-            output = new BufferedWriter(new FileWriter("/tmp/abrt_jboss_log", true));
-            output.write(record.getSourceClassName());
-            output.write(record.getLevel() + " ");
-            output.write(getFormatter().format(record));
-            output.flush();
+            problemServer.send(pd);
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Da fuq:" + e.getMessage());
         }
-        finally {  // cleanup
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
+        System.out.println("Sent");
+
     }
 
     /*
@@ -99,9 +111,9 @@ public class AbrtLogHandler extends Handler {
             }
         }
         // Not our log level - ignore
-        //else {
-        //
-        //}
+        else {
+            System.out.println("Not our exception:" + record.getMessage());
+        }
     }
 
     /*
