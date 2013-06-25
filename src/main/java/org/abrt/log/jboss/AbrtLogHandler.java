@@ -51,26 +51,18 @@ public class AbrtLogHandler extends Handler {
 
     public AbrtLogHandler() {
         setFormatter(formatter);
-        System.out.println(">>>>>>>>>>>>>> Init ABRT logger");
-        System.out.println(getLevel());
-
         try {
             problemServer = new ProblemDataServer();
         }
         catch (Exception e) {
-            System.out.println("Can;t connect to ABRT: "+ e.getMessage());
+            System.out.println("Can't connect to ABRT: "+ e.getMessage());
         }
-        System.out.println("Connected to ABRT");
     }
 
     private void log(LogRecord record) {
-
-        System.out.println(">>>>>>>>>>>>>> Let's log something for ABRT! " + String.format(record.getMessage(), record.getParameters()));
-
         ProblemData pd = new ProblemDataAbrt();
         Throwable throwable = record.getThrown();
         if (throwable != null) {
-            System.out.println("Got throwable, extracting stacktrace");
             StringWriter stringWriter = new StringWriter();
             PrintWriter pWriter = new PrintWriter(stringWriter);
             throwable.printStackTrace(pWriter);
@@ -82,17 +74,12 @@ public class AbrtLogHandler extends Handler {
         pd.add("PID", "" + Thread.currentThread().getId());
         /* TODO: get a path to the war file of the crashing application */
         pd.add("EXECUTABLE", "/usr/share/jboss-as/bin/standalone.sh");
-        System.out.println("ABRT LOG THREAD: " + Thread.currentThread().getId());
-        System.out.println("Sending data to ABRT");
 
         try {
             problemServer.send(pd);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            //e.printStackTrace();
-            System.out.println("Da fuq:" + e.getMessage());
+            System.out.println("Sending data to ABRT server failed :'" + e.getMessage() + "'");
         }
-        System.out.println("Sent");
 
     }
 
@@ -109,10 +96,6 @@ public class AbrtLogHandler extends Handler {
             } catch (Exception e) {
                 throw new IllegalStateException("Can't log the message: ", e);
             }
-        }
-        // Not our log level - ignore
-        else {
-            System.out.println("Not our exception:" + record.getMessage());
         }
     }
 
