@@ -31,7 +31,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.abrt.log.jboss;
+package com.redhat.abrt.log;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,10 +40,11 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import org.abrt.ProblemData;
-import org.abrt.ProblemDataAbrt;
-import org.abrt.ProblemDataServer;
 import org.jboss.logmanager.formatters.PatternFormatter;
+
+import com.redhat.abrt.ProblemData;
+import com.redhat.abrt.ProblemDataAbrt;
+import com.redhat.abrt.ProblemDataServer;
 
 public class AbrtLogHandler extends Handler {
     private final Formatter formatter = new PatternFormatter("%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n");

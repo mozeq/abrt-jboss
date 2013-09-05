@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.abrt.log</groupId>
+	<groupId>com.redhat.abrt.log</groupId>
 	<artifactId>abrt-log-jboss</artifactId>
-	<version>99-master-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>${project.artifactId}</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,6 +63,13 @@
 			<artifactId>javaee-api</artifactId>
 			<version>6.0</version>
 			<scope>provided</scope> <!-- without that it can cause Absent code exceptions -->
+		</dependency>
+		<dependency>
+			<groupId>com.redhat.abrt</groupId>
+			<artifactId>jabrt</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>/usr/share/java/jabrt/jabrt.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

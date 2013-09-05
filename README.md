@@ -12,7 +12,7 @@ Modify the JBoss configuration in `standalone/configuration/standalone.xml` like
 <pre>
 &lt;subsystem xmlns="urn:jboss:domain:logging:1.1"&gt;
     ...
-    &lt;custom-handler name="ABRT" class="org.abrt.log.jboss.AbrtLogHandler" module="org.abrt.log&gt;
+    &lt;custom-handler name="ABRT" class="com.redhat.abrt.log.jboss.AbrtLogHandler" module="org.abrt.log&gt;
         &lt;level name="ERROR"/&gt;
     &lt;/custom-handler&gt;
     ...

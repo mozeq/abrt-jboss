@@ -16,7 +16,7 @@
   <files>
     <file>
       <source>target/${project.build.finalName}.jar</source>
-      <outputDirectory>/org/abrt/log/main</outputDirectory>
+      <outputDirectory>/com/redhat/abrt/log/main</outputDirectory>
     </file>
   </files>
 </assembly>
